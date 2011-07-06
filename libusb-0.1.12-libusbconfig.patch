@@ -1,0 +1,49 @@
+--- libusb-0.1.12/libusb-config.in.orig	2004-01-27 23:36:37.000000000 +0100
++++ libusb-0.1.12/libusb-config.in	2006-05-30 10:56:10.000000000 +0200
+@@ -1,7 +1,6 @@
+ #!/bin/sh
+ 
+-prefix=@prefix@
+-exec_prefix=@exec_prefix@
++prefix_set=no
+ exec_prefix_set=no
+ 
+ usage()
+@@ -31,9 +30,7 @@
+   case $1 in
+     --prefix=*)
+       prefix=$optarg
+-      if test $exec_prefix_set = no ; then
+-        exec_prefix=$optarg
+-      fi
++      prefix_set=yes
+       ;;
+     --prefix)
+       echo_prefix=yes
+@@ -66,14 +63,22 @@
+ done
+ 
+ if test "$echo_prefix" = "yes"; then
+-	echo $prefix
++	if test "$prefix_set" = "yes"; then
++		echo $prefix
++	else
++		pkg-config @PACKAGE_NAME@ --variable=prefix
++	fi
+ fi
+ if test "$echo_exec_prefix" = "yes"; then
+-	echo $exec_prefix
++	if test "$exec_prefix_set" = "yes"; then
++		echo $exec_prefix
++	else
++		pkg-config @PACKAGE_NAME@ --variable=exec_prefix
++	fi
+ fi
+ if test "$echo_cflags" = "yes"; then
+-	echo $includes
++	pkg-config @PACKAGE_NAME@ --cflags
+ fi
+ if test "$echo_libs" = "yes"; then
+-	echo -L@libdir@ -lusb @OSLIBS@
++	pkg-config @PACKAGE_NAME@ --libs
+ fi
